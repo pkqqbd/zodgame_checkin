@@ -115,7 +115,7 @@ def zodgame_task(driver, formhash):
 
     return success
 
-def zodgame(cookie_string):
+def zodgame(cookie_auth, cookie_saltkey):
     options = uc.ChromeOptions()
     options.add_argument("--disable-popup-blocking")
     options.add_argument("--headless")
@@ -126,23 +126,35 @@ def zodgame(cookie_string):
     # Load cookie
     driver.get("https://zodgame.xyz/")
 
-    if cookie_string.startswith("cookie:"):
-        cookie_string = cookie_string[len("cookie:"):]
-    cookie_string = cookie_string.replace("/","%2")
-    cookie_dict = [ 
-        {"name" : x.split('=')[0].strip(), "value": x.split('=')[1].strip()} 
-        for x in cookie_string.split(';')
-    ]
+    # if cookie_string.startswith("cookie:"):
+    #     cookie_string = cookie_string[len("cookie:"):]
+    # cookie_string = cookie_string.replace("/","%2")
+    # cookie_dict = [ 
+    #     {"name" : x.split('=')[0].strip(), "value": x.split('=')[1].strip()} 
+    #     for x in cookie_string.split(';')
+    # ]
 
     driver.delete_all_cookies()
-    for cookie in cookie_dict:
-        if cookie["name"] in ["qhMq_2132_saltkey", "qhMq_2132_auth"]:
-            driver.add_cookie({
-                "domain": "zodgame.xyz",
-                "name": cookie["name"],
-                "value": cookie["value"],
-                "path": "/",
-            })
+    # for cookie in cookie_dict:
+    #     if cookie["name"] in ["qhMq_2132_saltkey", "qhMq_2132_auth"]:
+    #         driver.add_cookie({
+    #             "domain": "zodgame.xyz",
+    #             "name": cookie["name"],
+    #             "value": cookie["value"],
+    #             "path": "/",
+    #         })
+    driver.add_cookie({
+        "domain": "zodgame.xyz",
+        "name": "qhMq_2132_auth",
+        "value": cookie_auth,
+        "path": "/",
+    })
+    driver.add_cookie({
+        "domain": "zodgame.xyz",
+        "name": "qhMq_2132_saltkey",
+        "value": cookie_saltkey,
+        "path": "/",
+    })
     
     driver.get("https://zodgame.xyz/")
     
@@ -158,7 +170,9 @@ def zodgame(cookie_string):
     driver.quit()
     
 if __name__ == "__main__":
-    cookie_string = sys.argv[1]
-    assert cookie_string
+    cookie_auth = sys.argv[1]
+    cookie_saltkey = sys.argv[2]
+    assert cookie_auth
+    assert cookie_saltkey
     
-    zodgame(cookie_string)
+    zodgame(cookie_auth, cookie_saltkey)
